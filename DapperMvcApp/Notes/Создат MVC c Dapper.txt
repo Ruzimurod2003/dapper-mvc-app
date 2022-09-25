@@ -1,0 +1,68 @@
+﻿https://www.c-sharpcorner.com/article/using-dapper-in-asp-net-core-web-api/
+
+-----------------------------------------------------------------------------------------------------------------
+Install-Package Dapper -Version 2.0.123
+-----------------------------------------------------------------------------------------------------------------
+
+Добавленного пользователя
+-----------------------------------------------------------------------------------------------------------------
+public void Create(User user)
+{
+    using (IDbConnection db = new SqliteConnection(connectionString))
+    {
+        var sqlQuery = "INSERT INTO Users (Name, Age) VALUES(@Name, @Age)";
+        db.Execute(sqlQuery, user);
+
+        // если мы хотим получить id добавленного пользователя
+        //var sqlQuery = "INSERT INTO Users (Name, Age) VALUES(@Name, @Age); SELECT CAST(SCOPE_IDENTITY() as int)";
+        //int? userId = db.Query<int>(sqlQuery, user).FirstOrDefault();
+        //user.Id = userId.Value;
+    }
+}
+-----------------------------------------------------------------------------------------------------------------
+
+Изменение пользователя
+-----------------------------------------------------------------------------------------------------------------
+public void Update(User user)
+{
+    using (IDbConnection db = new SqliteConnection(connectionString))
+    {
+        var sqlQuery = "UPDATE Users SET Name = @Name, Age = @Age WHERE Id = @Id";
+        db.Execute(sqlQuery, user);
+    }
+}
+-----------------------------------------------------------------------------------------------------------------
+
+Удаление пользователя
+-----------------------------------------------------------------------------------------------------------------
+public void Delete(int id)
+{
+    using (IDbConnection db = new SqliteConnection(connectionString))
+    {
+        var sqlQuery = "DELETE FROM Users WHERE Id = @id";
+        db.Execute(sqlQuery, new { id });
+    }
+}
+-----------------------------------------------------------------------------------------------------------------
+
+Получить пользователя по Id
+-----------------------------------------------------------------------------------------------------------------
+public User Get(int id)
+{
+    using (IDbConnection db = new SqliteConnection(connectionString))
+    {
+        return db.Query<User>("SELECT * FROM Users WHERE Id = @id", new { id }).FirstOrDefault();
+    }
+}
+-----------------------------------------------------------------------------------------------------------------
+
+Получить всех пользователей
+-----------------------------------------------------------------------------------------------------------------
+public List<User> GetUsers()
+{
+    using (IDbConnection db = new SqliteConnection(connectionString))
+    {
+        return db.Query<User>("SELECT * FROM Users").ToList();
+    }
+}
+-----------------------------------------------------------------------------------------------------------------
